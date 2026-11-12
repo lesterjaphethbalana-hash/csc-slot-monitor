@@ -1,0 +1,48 @@
+name: csc-slot-monitor
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+    - cron: '2-59/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: csc-monitor
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install deps
+        run: pip install curl_cffi httpx
+
+      - name: Run availability check
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          CSC_COOKIES_JSON: ${{ secrets.CSC_COOKIES_JSON }}
+          LOC_ID: '195'
+          FORM_ID: '206'
+          MONTHS_AHEAD: '3'
+        run: python check.py
+
+      - name: Persist state
+        if: always()
+        run: |
+          git config user.name "csc-monitor-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add state.json history.ndjson 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -m "state update [skip ci]"
+            git push
+          fi
