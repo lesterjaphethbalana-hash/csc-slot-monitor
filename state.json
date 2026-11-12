@@ -1,0 +1,21 @@
+{
+ "session_flagged": false,
+ "last_ok": "2026-11-12 11:15 PHT",
+ "blocked_flagged": false,
+ "availability": {
+  "2026-11-12": {
+   "status": "booked",
+   "times": []
+  },
+  "2026-11-16": {
+   "status": "booked",
+   "times": []
+  },
+  "2026-11-17": {
+   "status": "booked",
+   "times": []
+  }
+ },
+ "last_run": "2026-11-12 11:15 PHT",
+ "last_status": "ok"
+}
